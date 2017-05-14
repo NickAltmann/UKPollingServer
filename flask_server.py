@@ -5,7 +5,7 @@ import tempfile
 import pollingserver.write_csvs
 
 
-cache_dir = os.path.join(os.getenv('OPENSHIFT_DATA', tempfile.gettempdir()), "pollingserver")
+cache_dir = os.path.join(tempfile.gettempdir(), "pollingserver")
 if not os.path.isdir(cache_dir):
     os.mkdir(cache_dir)
     os.chmod(cache_dir, 0o755)
@@ -14,7 +14,7 @@ if not os.path.isdir(cache_dir):
 app = Flask(__name__)
 
 
-updatetime = 60
+updatetime = 3600
 
 
 @app.route('/data/<selection>')
