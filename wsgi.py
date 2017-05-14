@@ -1,24 +1,51 @@
-#!/usr/bin/python
+from flask import Flask, Response
+import time
 import os
+import tempfile
+import pollingserver.write_csvs
 
-virtenv = os.path.join(os.environ.get('OPENSHIFT_PYTHON_DIR','.'), 'virtenv')
-virtualenv = os.path.join(virtenv, 'bin/activate_this.py')
-try:
-    execfile(virtualenv, dict(__file__=virtualenv))
-except IOError:
-    pass
-#
-# IMPORTANT: Put any additional includes below this line.  If placed above this
-# line, it's possible required libraries won't be in your searchable path
-#
 
-from flaskapp import app as application
+cache_dir = os.path.join(os.getenv('OPENSHIFT_DATA', tempfile.gettempdir()), "pollingserver")
+if not os.path.isdir(cache_dir):
+    os.mkdir(cache_dir)
+    os.chmod(cache_dir, 0o755)
 
-#
-# Below for testing only
-#
+
+app = Flask(__name__)
+
+
+updatetime = 60
+
+
+@app.route('/data/<selection>')
+def send_data(selection):
+
+    if selection not in pollingserver.write_csvs.available_data():
+        return "No data found"
+
+    filename = pollingserver.write_csvs.filename(selection)
+    filepath = os.path.join(cache_dir, filename)
+
+    now = time.time()
+    update_needed = True
+    if os.path.isfile(os.path.join(cache_dir, filepath)):
+        mod_time = os.path.getmtime(filepath)
+        if now - mod_time < updatetime:
+            update_needed = False
+
+    if update_needed:
+        pollingserver.write_csvs.write_csvs(cache_dir)
+
+    with open(filepath, "r") as f:
+        text = f.read()
+
+    return Response(text, mimetype="text/plain")
+
+
+@app.route('/hello_world')
+def hello_world():
+    return 'Hello World!'
+
+
 if __name__ == '__main__':
-    from wsgiref.simple_server import make_server
-    httpd = make_server('localhost', 8051, application)
-    # Wait for a single request, serve it and quit.
-    httpd.serve_forever()
+    app.run()
