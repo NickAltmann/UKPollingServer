@@ -20,7 +20,7 @@ def month_from_string(ss):
 def dataframe_from_url(url):
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'html.parser')
-    tables = soup.find_all("table", class_="datatable")
+    tables = soup.find_all("table")
 
     results = list()
     year = None
@@ -28,7 +28,7 @@ def dataframe_from_url(url):
 
     for table in tables:
         try:
-            hh = table.find('thead').find('tr').find("th", class_="col1_250")
+            hh = table.find('thead').find('tr').find(["th", "td"])
             year = int(hh.text.strip())
         except:
             try:
@@ -40,7 +40,7 @@ def dataframe_from_url(url):
 
         col = 0
         header_names = dict()
-        for th in header.find_all('th'):
+        for th in header.find_all(['th', 'td']):
             span = int(th.get('colspan', 1))
             text = th.contents[0]
             if col > 0:
@@ -87,9 +87,9 @@ def dataframe_from_url(url):
 
 def get_data():
 
-    urls = [r'https://www.ipsos-mori.com/researchpublications/researcharchive/88/Political-Monitor-Satisfaction-Ratings-1997Present.aspx',
-            r'https://www.ipsos-mori.com/researchpublications/researcharchive/poll.aspx?oItemId=2438&view=wide',
-            r'https://www.ipsos-mori.com/researchpublications/researcharchive/poll.aspx?oItemId=2437']
+    urls = [r'https://www.ipsos.com/ipsos-mori/en-uk/political-monitor-satisfaction-ratings-1997-present',
+            r'https://www.ipsos.com/ipsos-mori/en-uk/political-monitor-satisfaction-ratings-1988-1997',
+            r'https://www.ipsos.com/ipsos-mori/en-uk/political-monitor-satisfaction-ratings-1977-1987']
 
     dfs = [dataframe_from_url(url) for url in urls]
 

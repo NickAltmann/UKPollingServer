@@ -7,9 +7,9 @@ import pollingserver.mori
 
 
 _data_to_filename = {"leaders": "mori.csv",
-                    "parties": "parties.csv",
-                    "general_elections": "general_elections.csv",
-                    "in_power": "power.csv"}
+                     "parties": "parties.csv",
+                     "general_elections": "general_elections.csv",
+                     "in_power": "power.csv"}
 
 
 def available_data():
@@ -22,10 +22,9 @@ def filename(data):
 
 def write_csvs(target_dir):
 
-    if False:
-        df_mori = pollingserver.mori.get_data()
-        mori_filename = os.path.join(target_dir, filename("leaders"))
-        df_mori.to_csv(mori_filename, index=False)
+    df_mori = pollingserver.mori.get_data()
+    mori_filename = os.path.join(target_dir, filename("leaders"))
+    df_mori.to_csv(mori_filename, index=False)
 
     df_parties = hist.get_data()
     parties_filename = os.path.join(target_dir, filename("parties"))
