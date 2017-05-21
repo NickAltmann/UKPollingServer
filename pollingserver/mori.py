@@ -66,6 +66,9 @@ def dataframe_from_url(url):
                             try:
                                 rating = int(text)
                             except:
+                                # Might be new leader in middle of table.
+                                if text and text not in ("-", "n/a"):
+                                    header_names[col] = text
                                 rating = None
                             if rating:
                                 ratings[col] = rating

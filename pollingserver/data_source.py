@@ -15,5 +15,5 @@ def get_pack_filepath():
 
 
 def get_power_filepath():
-    return os.path.join(data_dir(), "power.csv")
+    return os.path.join(data_dir(), "in_power.csv")
 

@@ -23,7 +23,7 @@ def send_data(selection):
     if selection not in pollingserver.write_csvs.available_data():
         return "No data found"
 
-    filename = pollingserver.write_csvs.filename(selection)
+    filename = pollingserver.write_csvs.filename_from_string(selection)
     filepath = os.path.join(cache_dir, filename)
 
     now = time.time()
