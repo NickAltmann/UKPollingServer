@@ -2,9 +2,15 @@ import os
 import sys
 import shutil
 from enum import Enum
+from collections import OrderedDict
+import pandas as pd
+
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
 
 import pollingserver.party_history as hist
 import pollingserver.mori
+
 
 
 class AvailableData(Enum):
@@ -26,6 +32,24 @@ def filename_from_enum(data):
     return filename_from_string(data.name)
 
 
+def write_excel(frames, filename):
+    wb = Workbook()
+    ws = None
+
+    for frame in frames.items():
+        title = frame[0]
+        df = frame[1]
+        if ws:
+            ws = wb.create_sheet(title=title)
+        else:
+            ws = wb.active
+            ws.title = title
+        for r in dataframe_to_rows(df, index=False, header=True):
+            ws.append(r)
+
+    wb.save(filename=filename)
+
+
 def write_csvs(target_dir):
 
     df_mori = pollingserver.mori.get_data()
@@ -41,6 +65,10 @@ def write_csvs(target_dir):
     for f in files_to_copy:
         shutil.copy(f, target_dir)
 
+    names = ['Parties', 'Leaders', 'GeneralElections', 'InPower']
+    frames = [df_parties, df_mori] + [pd.read_csv(f) for f in files_to_copy]
+
+    write_excel(OrderedDict(zip(names, frames)), os.path.join(target_dir, "uk_polls.xlsx"))
 
 if __name__ == "__main__":
 

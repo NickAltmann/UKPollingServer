@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, send_file
 import time
 import os
 import tempfile
@@ -17,14 +17,8 @@ app = Flask(__name__)
 updatetime = 3600
 
 
-@app.route('/data/<selection>')
-def send_data(selection):
-
-    if selection not in pollingserver.write_csvs.available_data():
-        return "No data found"
-
-    filename = pollingserver.write_csvs.filename_from_string(selection)
-    filepath = os.path.join(cache_dir, filename)
+def _update_files():
+    filepath = os.path.join(cache_dir, "parties.csv")
 
     now = time.time()
     update_needed = True
@@ -35,6 +29,28 @@ def send_data(selection):
 
     if update_needed:
         pollingserver.write_csvs.write_csvs(cache_dir)
+
+
+@app.route('/file/<selection>')
+def send_attachment(selection):
+    _update_files()
+
+    filepath = os.path.join(cache_dir, selection)
+    if os.path.isfile(filepath):
+        return send_file(filepath)
+    return "No data found"
+
+
+@app.route('/data/<selection>')
+def send_data(selection):
+
+    if selection not in pollingserver.write_csvs.available_data():
+        return "No data found"
+
+    _update_files()
+
+    filename = pollingserver.write_csvs.filename_from_string(selection)
+    filepath = os.path.join(cache_dir, filename)
 
     with open(filepath, "r") as f:
         text = f.read()
