@@ -18,6 +18,7 @@ class AvailableData(Enum):
     leaders = 2
     in_power = 3
     general_elections = 4
+    notes = 5
 
 
 def available_data():
@@ -61,11 +62,13 @@ def write_csvs(target_dir):
     df_parties.to_csv(parties_filename, index=False)
 
     files_to_copy = [os.path.join(os.path.dirname(os.path.dirname(__file__)), "source", f)
-                     for f in [filename_from_enum(AvailableData.general_elections), filename_from_enum(AvailableData.in_power)]]
+                     for f in [filename_from_enum(AvailableData.general_elections),
+                               filename_from_enum(AvailableData.in_power),
+                               filename_from_enum(AvailableData.notes)]]
     for f in files_to_copy:
         shutil.copy(f, target_dir)
 
-    names = ['Parties', 'Leaders', 'GeneralElections', 'InPower']
+    names = ['Parties', 'Leaders', 'GeneralElections', 'InPower', 'Notes']
     frames = [df_parties, df_mori] + [pd.read_csv(f) for f in files_to_copy]
 
     write_excel(OrderedDict(zip(names, frames)), os.path.join(target_dir, "uk_polls.xlsx"))
