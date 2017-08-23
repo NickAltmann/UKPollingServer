@@ -1,9 +1,8 @@
 import os
 
 
-pack_name = "MarkPack_2017_04.xls"
-#wiki_url = 'https://en.wikipedia.org/wiki/Opinion_polling_for_the_next_United_Kingdom_general_election'
-wiki_url = 'https://en.wikipedia.org/wiki/Opinion_polling_for_the_United_Kingdom_general_election,_2017'
+pack_name = "PollBase-Q2-2017.xls"
+wiki_url = 'https://en.wikipedia.org/wiki/Opinion_polling_for_the_next_United_Kingdom_general_election'
 
 
 def data_dir():
