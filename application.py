@@ -11,7 +11,7 @@ if not os.path.isdir(cache_dir):
     os.chmod(cache_dir, 0o755)
 
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 
 updatetime = 3600
@@ -31,7 +31,7 @@ def _update_files():
         pollingserver.write_csvs.write_csvs(cache_dir)
 
 
-@app.route('/file/<selection>')
+@application.route('/file/<selection>')
 def send_attachment(selection):
     _update_files()
 
@@ -41,7 +41,7 @@ def send_attachment(selection):
     return "No data found"
 
 
-@app.route('/data/<selection>')
+@application.route('/data/<selection>')
 def send_data(selection):
 
     if selection not in pollingserver.write_csvs.available_data():
@@ -58,11 +58,14 @@ def send_data(selection):
     return Response(text, mimetype="text/plain")
 
 
-@app.route('/hello_world')
+@application.route('/hello_world')
 def hello_world():
     return 'Hello World!'
 
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+# run the app.
+if __name__ == "__main__":
+    # Setting debug to True enables debug output. This line should be
+    # removed before deploying a production app.
+    application.debug = True
+    application.run()
